@@ -1,0 +1,7 @@
+{
+  "name": "@dont-trust-that-card/shared",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Shared types and pure game logic placeholder"
+}
+

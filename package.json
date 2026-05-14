@@ -1,0 +1,12 @@
+{
+  "name": "dont-trust-that-card",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Online multiplayer bluff card game",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ]
+}
+
