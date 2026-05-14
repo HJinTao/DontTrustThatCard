@@ -20,8 +20,9 @@
 
 ## 关键文档
 
-- 正式规则：[docs/rules/game-rules-v0.7.md](docs/rules/game-rules-v0.7.md)
-- 设计规格：[docs/superpowers/specs/2026-05-14-dont-trust-that-card-design.md](docs/superpowers/specs/2026-05-14-dont-trust-that-card-design.md)
+- 正式规则：[docs/rules/game-rules-v0.8.md](docs/rules/game-rules-v0.8.md)
+- 最终 MVP 技术规格：[docs/superpowers/specs/2026-05-14-dont-trust-that-card-final-mvp-design.md](docs/superpowers/specs/2026-05-14-dont-trust-that-card-final-mvp-design.md)
+- 启动期设计规格：[docs/superpowers/specs/2026-05-14-dont-trust-that-card-design.md](docs/superpowers/specs/2026-05-14-dont-trust-that-card-design.md)
 - 实现计划：[docs/superpowers/plans/2026-05-14-multiplayer-mvp.md](docs/superpowers/plans/2026-05-14-multiplayer-mvp.md)
 
 ## 推荐实现方向
@@ -33,4 +34,3 @@
 - 共享层：TypeScript 纯逻辑模块，承载卡牌模型、回合状态机和共享事件类型
 
 本次初始化先不锁死依赖版本，避免在规则和产品边界还会调整时过早绑定技术细节。
-
