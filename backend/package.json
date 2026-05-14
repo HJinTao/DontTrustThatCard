@@ -2,6 +2,24 @@
   "name": "@dont-trust-that-card/backend",
   "private": true,
   "version": "0.1.0",
-  "description": "Backend server package placeholder"
+  "description": "Backend server package",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --import tsx src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "start": "node --import tsx src/server.ts"
+  },
+  "dependencies": {
+    "@dont-trust-that-card/shared": "0.1.0",
+    "fastify": "^5.1.0",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.7",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  }
 }
-
