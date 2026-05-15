@@ -2,7 +2,7 @@ import Fastify from "fastify";
 import { Server } from "socket.io";
 
 import { createRoomStore } from "./rooms/store";
-import { registerSocketHandlers } from "./socket/register";
+import { broadcastRoomSnapshots, registerSocketHandlers } from "./socket/register";
 
 export function createApp() {
   const app = Fastify({ logger: false });
@@ -13,6 +13,15 @@ export function createApp() {
   });
   const store = createRoomStore();
   const sessions = new Map();
+  const timeoutSweepId = globalThis.setInterval(() => {
+    store.sweepExpiredTurns((room) => {
+      broadcastRoomSnapshots(io, store, sessions, room.code);
+    });
+  }, 250);
+
+  app.addHook("onClose", async () => {
+    globalThis.clearInterval(timeoutSweepId);
+  });
 
   app.get("/health", async () => ({ ok: true }));
 

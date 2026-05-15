@@ -95,9 +95,11 @@ export function LobbyView({
                   <p>开局人数：{snapshot.lastGameSummary.startedPlayerCount}</p>
                   <p>
                     顺位：
-                    {snapshot.lastGameSummary.placements
-                      .map((entry) => entry.displayName)
-                      .join(" → ")}
+                    {snapshot.lastGameSummary.placements.length > 0
+                      ? snapshot.lastGameSummary.placements
+                          .map((entry) => entry.displayName)
+                          .join(" → ")
+                      : "暂无顺位"}
                   </p>
                   <p>
                     判负离场：

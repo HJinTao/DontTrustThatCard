@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { GameSnapshot, Rank } from "@dont-trust-that-card/shared";
 
 import { dispatchAudioEvent } from "../lib/audioEvents";
+import { getChallengeStampText, getPlayerStatusLabel } from "./copy";
 import { ActionBar } from "./ActionBar";
 import { ChatPanel } from "./ChatPanel";
 import { HandPanel } from "./HandPanel";
@@ -17,13 +18,13 @@ type GameTableProps = {
   onSendChat: (text: string) => void;
 };
 
-function formatTimer(timerEndsAtMs: number | null) {
-  if (!timerEndsAtMs) {
-    return "--";
+function formatTimer(timerEndsAtMs: number | null, nowMs: number) {
+  if (timerEndsAtMs === null) {
+    return "无";
   }
 
-  const remaining = Math.max(0, Math.ceil((timerEndsAtMs - Date.now()) / 1000));
-  return `${remaining}s`;
+  const remaining = Math.max(0, Math.ceil((timerEndsAtMs - nowMs) / 1000));
+  return `${remaining} 秒`;
 }
 
 export function GameTable({
@@ -37,6 +38,7 @@ export function GameTable({
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
   const [declaredRank, setDeclaredRank] = useState<Rank>(snapshot.declaredRank ?? "A");
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [nowMs, setNowMs] = useState(() => Date.now());
 
   useEffect(() => {
     dispatchAudioEvent("score-tick", {
@@ -57,11 +59,24 @@ export function GameTable({
     }
   }, [snapshot.declaredRank]);
 
+  useEffect(() => {
+    if (snapshot.timerEndsAtMs === null) {
+      return;
+    }
+
+    setNowMs(Date.now());
+    const intervalId = window.setInterval(() => {
+      setNowMs(Date.now());
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [snapshot.timerEndsAtMs]);
+
   const localPlayer = snapshot.players.find(
     (player) => player.playerId === snapshot.localPlayerId
   );
   const chipsValue = snapshot.pileCount.toString().padStart(2, "0");
-  const multValue = (snapshot.lastDeclaredCount ?? 0).toString().padStart(2, "0");
+  const declaredCountValue = (snapshot.lastDeclaredCount ?? 0).toString().padStart(2, "0");
 
   return (
     <div className={`table-shell ${reduceMotion ? "reduce-motion" : ""}`}>
@@ -69,20 +84,23 @@ export function GameTable({
       <div className="table-layout">
         <header className="panel top-bar">
           <div>
-            <span className="label">ROOM</span>
+            <span className="label">房间</span>
             <strong>{snapshot.roomCode}</strong>
           </div>
           <div>
-            <span className="label">ROUND</span>
+            <span className="label">本轮点数</span>
             <strong>{snapshot.declaredRank ?? "待首发"}</strong>
           </div>
           <div>
-            <span className="label">ACTOR</span>
-            <strong>{snapshot.players.find((player) => player.playerId === snapshot.currentActorPlayerId)?.displayName ?? "--"}</strong>
+            <span className="label">当前行动</span>
+            <strong>
+              {snapshot.players.find((player) => player.playerId === snapshot.currentActorPlayerId)
+                ?.displayName ?? "无"}
+            </strong>
           </div>
           <div>
-            <span className="label">TIMER</span>
-            <strong>{formatTimer(snapshot.timerEndsAtMs)}</strong>
+            <span className="label">倒计时</span>
+            <strong>{formatTimer(snapshot.timerEndsAtMs, nowMs)}</strong>
           </div>
           <button
             type="button"
@@ -97,19 +115,19 @@ export function GameTable({
           <section className="table-center">
             <div className="score-panel panel" aria-live="polite">
               <div className="score-block">
-                <span>CHIPS</span>
+                <span>牌堆</span>
                 <strong>{chipsValue}</strong>
               </div>
-              <div className={`score-block ${Number(multValue) >= 10 ? "is-on-fire" : ""}`}>
-                <span>MULT</span>
-                <strong>{multValue}</strong>
+              <div className={`score-block ${Number(declaredCountValue) >= 10 ? "is-on-fire" : ""}`}>
+                <span>张数</span>
+                <strong>{declaredCountValue}</strong>
               </div>
               <div className="round-callout">
-                <span className="label">DECLARE</span>
+                <span className="label">宣称点数</span>
                 <strong>{snapshot.declaredRank ? `${snapshot.lastDeclaredCount ?? 0} 张 ${snapshot.declaredRank}` : "等待首发"}</strong>
                 {snapshot.latestResult?.type === "challenge" ? (
                   <span className={`bluff-stamp ${snapshot.latestResult.success ? "bluff-fail" : "bluff-pass"}`}>
-                    {snapshot.latestResult.success ? "BLUFF!" : "LEGIT!"}
+                    {getChallengeStampText(snapshot.latestResult.success)}
                   </span>
                 ) : null}
               </div>
@@ -118,7 +136,10 @@ export function GameTable({
             <div className="table-cloth panel">
               <div className="cloth-column">
                 <span className="label">上家</span>
-                <strong>{snapshot.players.find((player) => player.playerId === snapshot.shangjiaPlayerId)?.displayName ?? "--"}</strong>
+                <strong>
+                  {snapshot.players.find((player) => player.playerId === snapshot.shangjiaPlayerId)
+                    ?.displayName ?? "无"}
+                </strong>
               </div>
               <div className="cloth-column">
                 <span className="label">牌堆</span>
@@ -126,7 +147,7 @@ export function GameTable({
               </div>
               <div className="cloth-column">
                 <span className="label">你的状态</span>
-                <strong>{localPlayer?.status ?? "--"}</strong>
+                <strong>{localPlayer ? getPlayerStatusLabel(localPlayer.status) : "无"}</strong>
               </div>
             </div>
 

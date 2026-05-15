@@ -321,6 +321,18 @@ export class Room {
     this.syncGameState(nextState);
   }
 
+  getExpiredActorPlayerId(nowMs: number): string | null {
+    if (this.phase !== "in_game" || !this.gameState || this.turnEndsAtMs === null) {
+      return null;
+    }
+
+    if (nowMs < this.turnEndsAtMs) {
+      return null;
+    }
+
+    return this.gameState.round?.currentActorPlayerId ?? null;
+  }
+
   getRoomSnapshot(localPlayerId: string): RoomSnapshot {
     return {
       phase: this.phase === "game_over" ? "game_over" : "lobby",

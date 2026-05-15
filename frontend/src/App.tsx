@@ -25,7 +25,7 @@ function EntryScreen({
   onJoin: (playerName: string, roomCode: string) => void;
   error: string | null;
 }) {
-  const [playerName, setPlayerName] = useState("Player01");
+  const [playerName, setPlayerName] = useState("玩家01");
   const [roomCode, setRoomCode] = useState("");
 
   return (

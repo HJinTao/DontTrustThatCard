@@ -30,9 +30,9 @@ export function ActionBar({
   return (
     <section className="action-bar panel">
       <div className="declare-panel">
-        <span className="label">Declare / Bluff</span>
+        <span className="label">宣称点数</span>
         <select
-          aria-label="声明点数"
+          aria-label="宣称点数"
           value={declaredRank}
           onChange={(event) => onDeclaredRankChange(event.target.value as Rank)}
         >
@@ -42,7 +42,7 @@ export function ActionBar({
             </option>
           ))}
         </select>
-        <span className="selected-count">{selectedCount} 张已选</span>
+        <span className="selected-count">已选 {selectedCount} 张</span>
       </div>
       <div className="action-buttons">
         <button
@@ -55,7 +55,7 @@ export function ActionBar({
             onChallenge();
           }}
         >
-          质疑 / CALL BLUFF
+          质疑
         </button>
         <button
           type="button"

@@ -85,11 +85,26 @@ export function createRoomStore(options: RoomStoreOptions = {}) {
     }
   }
 
+  function sweepExpiredTurns(onSweep: (room: Room) => void) {
+    const currentNow = now();
+
+    for (const room of rooms.values()) {
+      const actorId = room.getExpiredActorPlayerId(currentNow);
+      if (!actorId) {
+        continue;
+      }
+
+      room.handleTurnTimeout(actorId);
+      onSweep(room);
+    }
+  }
+
   return {
     createRoom,
     getRoom,
     setRoomCode,
-    removePlayer
+    removePlayer,
+    sweepExpiredTurns
   };
 }
 

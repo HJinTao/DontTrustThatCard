@@ -1,5 +1,7 @@
 import type { GameSnapshot } from "@dont-trust-that-card/shared";
 
+import { getPlayerStatusLabel } from "./copy";
+
 type PlayerStripProps = {
   players: GameSnapshot["players"];
   currentActorPlayerId: string | null;
@@ -56,7 +58,7 @@ export function PlayerStrip({
                 <span>{player.handCount} 张</span>
               </div>
               <div className="player-row muted">
-                <span>{player.status}</span>
+                <span>{getPlayerStatusLabel(player.status)}</span>
                 {player.playerId === shangjiaPlayerId ? <span>上家</span> : null}
               </div>
               <div className="suspicion-track" aria-label={`玩家 ${player.displayName} 的怀疑值`}>
